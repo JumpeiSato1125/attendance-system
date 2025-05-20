@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>申請受理画面</title>
+	<link rel="stylesheet" href="/css/attendanceCommon.css">
+	<link rel="stylesheet" href="/css/reviewScreen.css">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/attendance.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{fragments/header :: header}" />
+
+	<!-- フィルター -->
+	<div class="filter-section">
+		<form method="get" th:action="@{/reviewScreen}" style="margin-bottom: 1rem;">
+			<select name="year">
+				<option th:each="y : ${#numbers.sequence(2000, 2050)}" th:value="${y}" th:text="${y}"
+					th:selected="${y == year}"></option>
+			</select>
+			<select name="month">
+				<option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="${m}"
+					th:selected="${m == month}"></option>
+			</select>
+			<select name="departmentId">
+				<option value="" th:selected="${selectedDepartmentId == null}">全ての部署</option>
+				<option th:each="dept : ${departments}" th:value="${dept.departmentId}"
+					th:text="${dept.name + ' - ' + dept.teamName}"
+					th:selected="${dept.departmentId == selectedDepartmentId}">
+				</option>
+			</select>
+			<button type="submit" class="search-button">表示</button>
+		</form>
+	</div>
+	<!-- テーブル -->
+	<div class="table-section">
+		<div class="table-wrapper">
+			<div th:text="${msg}"></div>
+			<table>
+				<thead>
+					<tr>
+						<th>社員番号</th>
+						<th>氏名</th>
+						<th>部署</th>
+						<th>ステータス</th>
+						<th colspan="2">申請処理</th>
+						<th>詳細</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="record : ${recordsPage.content}">
+						<td th:text="${record.username}"></td>
+						<td th:text="${record.user.lastName + record.user.firstName}"></td>
+						<td th:text="${record.user.department != null ? record.user.department.name : '未所属'}"></td>
+						<td th:text="${record.status}"></td>
+						<td>
+							<div th:unless="${record.status == PENDING or record.status == REJECTED}">
+								<form th:action="@{/reviewScreen/application/rejected}" method="post">
+									<input type="hidden" name="monthlyId" th:value="${record.monthlyId}">
+									<input type="hidden" name="username" th:value="${record.username}">
+									<button type="submit" class="search-button">差し戻し</button>
+								</form>
+							</div>
+						</td>
+						<td>
+							<div th:if="${record.status == PROGRESS}">
+								<form th:action="@{/reviewScreen/application/approve}" method="post">
+									<input type="hidden" name="monthlyId" th:value="${record.monthlyId}">
+									<input type="hidden" name="username" th:value="${record.username}">
+									<button type="submit" class="search-button">受理</button>
+								</form>
+							</div>
+						</td>
+						<td>
+							<a th:href="@{/reviewScreen/view/{username}(username=${record.username})}">詳細</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- ページングナビゲーション -->
+	<div class="paging">
+		<a th:if="${recordsPage.hasPrevious()}" th:href="@{/reviewScreen(page=${recordsPage.number - 1})}">前へ</a>
+		<span th:text="${recordsPage.number + 1} + ' / ' + ${recordsPage.totalPages}"></span>
+		<a th:if="${recordsPage.hasNext()}" th:href="@{/reviewScreen(page=${recordsPage.number + 1})}">次へ</a>
+	</div>
+
+	<!-- 注意文と出力ボタン -->
+	<div class="status-comment">
+		ステータスが全て受理されたことを確認してcsv出力してください
+	</div>
+
+	<div class="button-grid">
+		<form th:action="@{/reviewScreen/export}" method="get" target="_blank">
+			<input type="hidden" name="year" th:value="${year}">
+			<input type="hidden" name="month" th:value="${month}">
+			<input type="hidden" name="departmentId" th:value="${selectedDepartmentId}">
+			<button type="submit" class="csv-button">CSV出力</button>
+		</form>
+	</div>
+
+	</div>
+
+	<footer class="footer">
+		&copy; 2025 Company All rights reserved.
+	</footer>
+</body>
+
+</html>

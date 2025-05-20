@@ -1,0 +1,125 @@
+@charset "UTF-8";
+
+/* フィルターエリア：横並び + 幅指定 */
+.filter-section {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	justify-content: center;
+	align-items: center;
+}
+
+/* チェックボックス中央寄せ */
+.table-section td input[type="checkbox"],
+.table-section th input[type="checkbox"] {
+	transform: scale(1.1);
+	cursor: pointer;
+}
+
+/* フィルターの並び・幅・検索ボタン */
+.filter-section select,
+.filter-section input[type="text"] {
+	width: 100px;
+	padding: 0.4rem;
+	font-size: 0.85rem;
+}
+
+.search-button {
+	padding: 0.4rem 0.8rem;
+	font-size: 0.85rem;
+	background-color: #d50000;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.search-button:hover {
+	background-color: #b20000;
+}
+
+.csv-button {
+	padding: 0.4rem 0.8rem;
+	font-size: 0.85rem;
+	background-color: #d50000;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	margin-bottom:1.5rem;
+}
+
+/* 表全体の中央寄せ＆固定幅化 */
+.table-section {
+	display: flex;
+	justify-content: center;
+}
+
+/* テーブルラッパーを固定幅 + 枠線 */
+.table-section .table-wrapper {
+	border: 2px solid #d50000;
+	border-radius: 8px;
+	padding: 1rem;
+	overflow-x: auto;
+	width: 720px;
+	/* ← 幅を固定 */
+	max-width: 100%;
+	/* ← スマホ対応 */
+	box-sizing: border-box;
+}
+
+/* テーブルサイズ縮小 */
+.table-section table {
+	width: 100%;
+	/* ← 枠いっぱいに */
+	border-collapse: collapse;
+	min-width: unset;
+	/* ← 自動幅に任せる */
+}
+
+/* テーブルセル（チェックボックスあり） */
+.table-section th,
+.table-section td {
+	border: 1px solid #ccc;
+	padding: 0.4rem;
+	text-align: center;
+	white-space: nowrap;
+}
+
+/* ボタンを少し小さめに */
+.table-section button {
+	padding: 0.4rem 0.8rem;
+	font-size: 0.8rem;
+	background-color: #d50000;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.paging{
+	text-align: center;
+}
+
+/* 出力ボタン中央配置 */
+.button-grid {
+	display: flex;
+	justify-content: center;
+	margin-top: 1rem;
+}
+
+/* ステータスメッセージの余白調整 */
+.status-comment {
+	background-color: #fff3f3;
+	border: 1px solid #f44336;
+	padding: 1rem;
+	margin: 1rem auto 0 auto;
+	border-radius: 4px;
+	max-width: 600px;
+	text-align: center;
+}
+

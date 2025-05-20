@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>アカウント登録完了</title>
+	<link rel="stylesheet" href="/css/attendanceCommon.css">
+	<link rel="stylesheet" href="/css/accountRegister.css">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/attendance.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{fragments/header :: header}" />
+
+	<main>
+		<h2>アカウント発行が完了しました</h2>
+		<p>mailアドレスにパスワードを送信しました。メール内容を確認してください。</p>
+	</main>
+
+	<footer class="footer">
+		&copy; 2025 Company All rights reserved.
+	</footer>
+</body>
+
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>勤怠管理</title>
+	<link rel="stylesheet" th:href="@{/css/attendanceCommon.css}">
+	<link rel="stylesheet" href="/css/attendance.css">
+	<link rel="stylesheet" href="/css/attendanceHistory.css">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/attendance.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{fragments/header :: header}" />
+
+	<div class="container">
+		<section class="table-section">
+			<h2 th:text="${targetUser + 'さんの勤怠管理'}"></h2>
+			<form method="get" th:if="${mode == 'historyMode'}" th:action="@{/attendance/history}"
+				style="margin-bottom: 1em;">
+				<select name="year">
+					<option th:each="y : ${#numbers.sequence(2000, 2050)}" th:value="${y}" th:text="${y}"
+						th:selected="${y == year}">
+					</option>
+				</select>年
+				<select name="month">
+					<option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="${m}"
+						th:selected="${m == month}"></option>
+				</select>月
+				<button type="submit">表示</button>
+			</form>
+			<div th:text="${msg}"></div>
+			<div class="table-scroll">
+				<table>
+					<thead>
+						<tr>
+							<th>日付</th>
+							<th>出勤時間</th>
+							<th>退勤時間</th>
+							<th>退勤区分</th>
+							<th>深夜開始時間</th>
+							<th>深夜退勤時間</th>
+							<th>コメント</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="day : ${daysInMonth}"
+							th:with="normal=${normalRecords.get(day)}, night=${nightRecords.get(day)}">
+							<form method="post" th:action="@{/attendance/edit/{day}(day=${day})}">
+								<td th:text="${day.dayOfMonth} + '日'"></td>
+
+								<!-- 通常出勤 -->
+								<td>
+									<input type="time" name="clockIn" th:value="${normal?.clockIn}" size="8" />
+								</td>
+								<td>
+									<input type="time" name="clockOut" th:value="${normal?.clockOut}" size="8" />
+								</td>
+								<td>
+									<select name="attendanceType">
+										<option value="" disabled selected th:if="${normal?.attendanceType == null}">
+										</option>
+										<option th:each="type : ${attendanceTypes}" th:value="${type}" th:text="${type}"
+											th:selected="${type == normal?.attendanceType}">
+										</option>
+									</select>
+								</td>
+								<!-- 深夜出勤 -->
+								<td>
+									<input type="time" name="nightClockIn" th:value="${night?.clockIn}" size="8" />
+								</td>
+								<td>
+									<input type="time" name="nightClockOut" th:value="${night?.clockOut}" size="8" />
+								</td>
+								<!-- コメント（通常勤務） -->
+								<td>
+									<input type="text" name="comment" th:value="${normal?.comment}" size="8" />
+									<!-- 編集ボタン：通常か深夜どちらかがあれば表示 -->
+								<td>
+									<button th:if="${ mode != 'reviewMode' }"
+										type="submit">編集</button>
+								</td>
+							</form>
+						</tr>
+						<!-- 以下省略 -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="attendance-summary">
+				<h3>月間集計</h3>
+				<table class="summary-table">
+					<tr>
+						<th>実労働時間</th>
+						<td th:text="${summary.totalWorkHours + ' 時間'}"></td>
+					</tr>
+					<tr>
+						<th>深夜労働時間</th>
+						<td th:text="${summary.nightWorkHours + ' 時間'}"></td>
+					</tr>
+					<tr>
+						<th>有給取得日数</th>
+						<td th:text="${summary.paidLeaveDays + ' 日'}"></td>
+					</tr>
+					<tr>
+						<th>欠席日数</th>
+						<td th:text="${summary.absentDays + ' 日'}"></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="monthly-status" th:text="'ステータス： ' + ${monthly.status}"></div>
+			<!-- 差し戻しコメントの表示（閲覧用） -->
+			<div class="status-comment" th:if="${monthly.returnComment != null and mode != 'reviewMode'}">
+				<p th:text="'管理者コメント：' + ${monthly.returnComment}"></p>
+			</div>
+
+			<!-- 差し戻しコメントの編集フォーム（管理者・マネージャーのみ） -->
+			<div class="status-comment" th:if="${mode == 'reviewMode'}">
+			    <form th:action="@{/reviewScreen/returnComment}" method="post">
+			        <input type="hidden" name="monthlyId" th:value="${monthly.monthlyId}" />
+			        <input type="hidden" name="username" th:value="${targetUser}" />
+
+			        <label for="comment">コメント（255文字以内）：</label>
+			        <textarea id="comment" name="returnComment" maxlength="255" rows="4"
+			                  th:text="${monthly.returnComment}"></textarea>
+
+			        <button type="submit">コメントを追加</button>
+			    </form>
+			</div>
+
+			<div th:if="${mode == 'historyMode' and monthly != null}">
+				<div th:if="${monthly.status == PENDING or monthly.status == REJECTED}"
+				<div class="button-grid">
+					<form th:action="@{/attendance/application}" method="post">
+						<input type="hidden" name="monthlyId" th:value="${monthly.monthlyId}" />
+						<button type="submit">申請する</button>
+					</form>
+				</div>
+			</div>
+	</div>
+	</section>
+	</div>
+
+	<footer>
+		&copy; 2025 勤怠管理システム All rights reserved.
+	</footer>
+</body>
+
+</html>
+
+</html>

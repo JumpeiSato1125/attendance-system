@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>勤怠打刻</title>
+	<link rel="stylesheet" th:href="@{/css/attendanceCommon.css}">
+	<link rel="stylesheet" th:href="@{/css/attendance.css}">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/attendance.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{fragments/header :: header}" />
+
+	<div class="container">
+		<section class="clock-section">
+			<h2>勤怠打刻</h2>
+			<div class="date" id="today-date"></div>
+			<div class="time" id="current-time"></div>
+
+			<div class="button-grid">
+				<form method="post" th:action="@{/attendance/start}" id="start_form">
+					<button type="submit" id="start" th:value="出勤">出勤</button>
+				</form>
+				<form method="post" th:action="@{/attendance/end}" id="end_form">
+					<button>退勤</button>
+				</form>
+				<form method="post" th:action="@{/attendance/absense}" id="absense_form">
+					<button>欠席</button>
+				</form>
+				<form method="post" th:action="@{/attendance/holiday}" id="holiday_form">
+					<button>有給</button>
+				</form>
+				<div th:text="${msg}"></div>
+			</div>
+			<div class="attendance"></div>
+		</section>
+
+		<section>
+			<h3>お知らせ</h3>
+			<ul>
+				<li>5月30日、10時30分から11時までメンテナンスのため、一時的に使用不可となります。</li>
+				<li>5月21日から社員旅行があります。</li>
+			</ul>
+		</section>
+	</div>
+
+	<footer>
+		&copy; 2025 勤怠管理システム All rights reserved.
+	</footer>
+</body>
+
+</html>

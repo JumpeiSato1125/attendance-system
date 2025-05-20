@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+	<header class="site-header" th:fragment="header">
+		<div class="logo">勤怠管理システム</div>
+
+		<!-- メニューボタン -->
+		<div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+		<!-- メニュー内容 -->
+		<nav id="dropdownMenu" class="dropdown-menu">
+			<ul>
+				<li><a th:href="@{/attendance/index}">ホーム</a></li>
+				<li> <a th:href="@{/attendance/history(year=${#temporals.createNow().year}, month=${#temporals.createNow().monthValue})}">
+						勤怠履歴画面
+					</a></li>
+				<li><a th:href="@{/register/mypage}">マイページ</a></li>
+				<li sec:authorize="hasAnyRole('ROLE_ADMIN', '管理者')">
+					<a th:href="@{/reviewScreen(year=${#temporals.createNow().year}, month=${#temporals.createNow().monthValue})}">
+						勤怠集計画面
+					</a>
+				</li>
+				<li sec:authorize="hasAnyRole('ROLE_ADMIN', '管理者')">
+					<a th:href="@{/register}">アカウント発行</a>
+				</li>
+				<li><a th:href="@{/logout}">ログアウト</a></li>
+			</ul>
+		</nav>
+	</header>
+</body>
+
+</html>

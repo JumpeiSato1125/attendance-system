@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>アカウント情報</title>
+	<link rel="stylesheet" href="/css/attendanceCommon.css">
+	<link rel="stylesheet" href="/css/mypage.css">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script th:src="@{/js/attendance.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{fragments/header :: header}" />
+
+	<main class="form-container">
+		<h2>アカウント情報</h2>
+		<div th:text="${msg}"></div>
+		<form th:action="@{/register/mypage/update}" th:object="${mypageBean}" method="post">
+			<div class="form-group">
+				<label for="username">社員番号</label>
+				<p th:text="${ud.username}">
+			</div>
+
+			<div class="form-group name-group">
+				<label>姓名</label>
+				<p th:text="${ud.lastName + ' ' + ud.firstName}">
+			</div>
+
+			<div class="form-group">
+				<label for="department">部署名</label>
+				<select id="department" th:field="*{departmentId}" required>
+					<option value="">選択してください</option>
+					<option th:each="dept : ${dd}" th:value="${dept.departmentId}"
+						th:text="${dept.name + ' ' + dept.teamName}">
+					</option>
+				</select>
+				<div class="error" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" th:field="*{email}" id="email" required>
+				<div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="shift">シフト</label>
+				<select id="shift" th:field="*{shiftDepartmentId}" required>
+					<option value="">選択してください</option>
+					<option th:each="dept : ${dd}" th:value="${dept.departmentId}"
+						th:text="${dept.name + ' ' + dept.teamName}">
+					</option>
+				</select>
+				<div class="error" th:if="${#fields.hasErrors('shiftDepartmentId')}" th:errors="*{shiftDepartmentId}">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="defaultCheckIn">業務開始時刻</label>
+				<input type="time" th:field="*{defaultCheckIn}" id="defaultCheckIn">
+				<div class="error" th:if="${#fields.hasErrors('defaultCheckIn')}" th:errors="*{defaultCheckIn}"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="endTime">業務終了時間</label>
+				<input type="time" th:field="*{defaultCheckOut}" id="defaultCheckOut" required>
+				<div class="error" th:if="${#fields.hasErrors('defaultCheckOut')}" th:errors="*{defaultCheckOut}"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="nightStartTime">深夜開始時間</label>
+				<input type="time" th:name="nightStart"
+					th:value="${mypageBean.nightStart != null ? #temporals.format(mypageBean.nightStart, 'HH:mm') : ''}"
+					id="nightStartTime" required>
+				<div class="error" th:if="${#fields.hasErrors('nightStart')}" th:errors="*{nightStart}"></div>
+			</div>
+
+			<div class="form-group">
+				<label for="nightEnd">深夜終了時間</label>
+				<input type="time" th:name="nightEnd"
+					th:value="${mypageBean.nightEnd != null ? #temporals.format(mypageBean.nightEnd, 'HH:mm') : ''}"
+					id="nightEnd" required>
+				<div class="error" th:if="${#fields.hasErrors('nightEnd')}" th:errors="*{nightEnd}"></div>
+			</div>
+			<div class="submit-group">
+				<button type="submit">データを更新する</button>
+			</div>
+		</form>
+	</main>
+
+	<footer class="footer">
+		&copy; 2025 Company All rights reserved.
+	</footer>
+</body>
+
+</html>
