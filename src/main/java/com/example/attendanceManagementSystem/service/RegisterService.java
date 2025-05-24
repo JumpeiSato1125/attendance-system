@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +62,7 @@ public class RegisterService {
 		ud.setEmail(user.getEmail());
 		Departments dept = user.getDepartment();
 		if (dept != null) {
-		    ud.setDepartmentId(dept.getDepartmentId());
+			ud.setDepartmentId(dept.getDepartmentId());
 		} else {
 			ud.setDepartmentId(null);
 		}
@@ -71,8 +72,8 @@ public class RegisterService {
 	public ShiftSettingDto selecShiftSetting(String username) {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDate workDate = now.toLocalDate();
-		Optional<ShiftSettings> opt = 
-				shiftSettingsDao.findTopByUsernameAndEffectiveFromLessThanEqualOrderByEffectiveFromDesc(username, workDate);
+		Optional<ShiftSettings> opt = shiftSettingsDao
+				.findTopByUsernameAndEffectiveFromLessThanEqualOrderByEffectiveFromDesc(username, workDate);
 		ShiftSettings shift = opt.get();
 		ShiftSettingDto sd = new ShiftSettingDto();
 		sd.setDefaultCheckIn(shift.getDefaultCheckIn());
@@ -156,6 +157,19 @@ public class RegisterService {
 
 		usersDao.save(record);
 
+		// shift_settingsを登録する
+		ShiftSettings shift = new ShiftSettings();
+
+		shift.setUsername(accountRegisterBean.getUsername());
+		shift.setDepartmentId(accountRegisterBean.getDepartmentId());
+		shift.setDefaultCheckIn(LocalTime.of(9, 0, 0));
+		shift.setDefaultCheckOut(LocalTime.of(18, 0, 0));
+		shift.setEffectiveFrom(LocalDate.now());
+		shift.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+		shift.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+		shiftSettingsDao.save(shift);
+
 		// メール送信
 		try {
 			sendPasswordMail(accountRegisterBean.getEmail(), accountRegisterBean.getUsername(), rawPassword);
@@ -167,7 +181,7 @@ public class RegisterService {
 
 		return true;
 	}
-	
+
 	@Transactional
 	public boolean updateAccount(String username, MypageBean mypageBean) {
 		Optional<Users> optUser = usersDao.findById(username);
@@ -186,8 +200,8 @@ public class RegisterService {
 
 		// シフト設定の更新（最新の有効なシフトを取得）
 		Optional<ShiftSettings> shiftOpt = shiftSettingsDao
-			.findTopByUsernameAndEffectiveFromLessThanEqualOrderByEffectiveFromDesc(
-				username, LocalDate.now());
+				.findTopByUsernameAndEffectiveFromLessThanEqualOrderByEffectiveFromDesc(
+						username, LocalDate.now());
 
 		if (shiftOpt.isPresent()) {
 			ShiftSettings shift = shiftOpt.get();
@@ -216,21 +230,21 @@ public class RegisterService {
 
 		return true;
 	}
-	
-	public MypageBean toMypageBean(String username, UserDto ud, ShiftSettingDto sd) {
-		
-	    MypageBean bean = new MypageBean();
-	    bean.setEmail(ud.getEmail());
-	    bean.setDepartmentId(ud.getDepartmentId());
-	    bean.setShiftDepartmentId(sd.getDepartmentId());
-	    bean.setDefaultCheckIn(sd.getDefaultCheckIn());
-	    bean.setDefaultCheckOut(sd.getDefaultCheckOut());
-	    bean.setNightStart(sd.getNightStart());
-	    bean.setNightEnd(sd.getNightEnd());
 
-	    return bean;
+	public MypageBean toMypageBean(String username, UserDto ud, ShiftSettingDto sd) {
+
+		MypageBean bean = new MypageBean();
+		bean.setEmail(ud.getEmail());
+		bean.setDepartmentId(ud.getDepartmentId());
+		bean.setShiftDepartmentId(sd.getDepartmentId());
+		bean.setDefaultCheckIn(sd.getDefaultCheckIn());
+		bean.setDefaultCheckOut(sd.getDefaultCheckOut());
+		bean.setNightStart(sd.getNightStart());
+		bean.setNightEnd(sd.getNightEnd());
+
+		return bean;
 	}
-	
+
 	// パスワード生成
 	public String generatePassword(int length) {
 		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -34,8 +34,8 @@
 				<label for="department">部署名</label>
 				<select name="departmentId" id="department" required>
 					<option value="">選択してください</option>
-					<option th:each="dept : ${dd}" th:value="${dept.departmentId}" 
-					th:text="${dept.name + ' ' + dept.teamName}"></option>
+					<option th:each="dept : ${dd}" th:value="${dept.departmentId}"
+						th:text="${dept.name + ' ' + dept.teamName}"></option>
 				</select>
 			</div>
 
@@ -51,11 +51,11 @@
 				<label for="email">メールアドレス</label>
 				<input type="email" id="email" name="email" required>
 			</div>
-
-			<div class="submit-group">
-				<button type="submit">発行する</button>
-			</div>
 		</form>
+		<div class="submit-group">
+			<button>デモではアカウント発行できません</button>
+		</div>
+
 	</main>
 
 	<footer class="footer">
